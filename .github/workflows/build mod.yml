@@ -58,6 +58,9 @@ jobs:
             echo "proceed=false" >> "$GITHUB_ENV"
           fi
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+		
       - name: Build mod
         if: env.proceed == 'true'
         run: ./gradlew build
