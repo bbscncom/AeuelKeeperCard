@@ -61,8 +61,8 @@ jobs:
             echo "Current version ($current_version) is greater or equal to latest version ($latest_tag). Skipping build and release."
             echo "proceed=false" >> "$GITHUB_ENV"
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #env:
+          #GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
