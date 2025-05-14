@@ -24,12 +24,19 @@ jobs:
           echo "mod_version=$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Get latest tag from GitHub
+      - name: Get latest Git tag
         id: get_latest_tag
         run: |
-          latest_tag=$(git fetch --tags && git describe --tags $(git rev-list --tags --max-count=1))
-          echo "latest_tag=$latest_tag"
-          echo "latest_tag=$latest_tag" >> "$GITHUB_OUTPUT"
+          git fetch --tags
+          tag=$(git tag --sort=-v:refname | head -n 1)
+          if [ -z "$tag" ]; then
+            echo "No tag found, using default v0.0.0"
+            echo "latest_tag=v0.0.0" >> "$GITHUB_OUTPUT"
+          else
+            echo "Found latest tag: $tag"
+            echo "latest_tag=$tag" >> "$GITHUB_OUTPUT"
+          fi
+
 
       - name: Compare versions
         id: compare_versions
