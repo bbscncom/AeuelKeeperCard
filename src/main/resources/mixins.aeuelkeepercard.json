@@ -1,0 +1,25 @@
+{
+    "package": "com.bbscncom.keepcard.mixins",
+    "required": true,
+    "refmap": "mixins.aeuelkeepercard.refmap.json",
+    "target": "@env(DEFAULT)",
+    "minVersion": "0.8.5",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+        "base.machine.MixinBlockUpgradeInventory",
+        "base.machine.MixinStackUpgradeInventory",
+        "base.MixinDualityInterface",
+        "base.MixinKeeper",
+        "base.MixinNetworkTool",
+        "base.MixinSlotRestrictedInput",
+        "base.MixinUpgradeInventory",
+        "base.MixinUpgradeInvFilter",
+        "UpgradesAccessor"
+    ],
+    "client": [
+        
+    ],
+    "server": [
+        
+    ]
+}

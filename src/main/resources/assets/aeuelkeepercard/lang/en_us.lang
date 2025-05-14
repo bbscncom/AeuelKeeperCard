@@ -1,0 +1,9 @@
+item.aeuelkeepercard.keeper.name=Keeper Card
+item.aeuelkeepercard.keeper.desc=Keep Item Number
+tile.aeuelkeepercard.keepercontroller.name=Controller
+tile.aeuelkeepercard.keepercontroller.desc=
+itemGroup.aeuelkeepercard=Keeper Card
+
+aeuelkeepercard.keeper.keepernum.name=should keep number:
+aeuelkeepercard.keeper.percraft.name=percraft numer:
+aeuelkeepercard.keeper.info=right click to set numer
