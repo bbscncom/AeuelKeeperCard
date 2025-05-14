@@ -152,8 +152,8 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
         int keepNum = nums[0];
         int perCraft = nums[1];
 
-        lines.add(I18n.format(Main.MOD_ID + ".keeper.keepernum.name") + ": " + (keepNum == 0 ? "-" : keepNum));
-        lines.add(I18n.format(Main.MOD_ID + ".keeper.percraft.name") + ": " + (perCraft == 0 ? "-" : perCraft));
+        lines.add(I18n.format(Main.MOD_ID + ".keeper.keepernum.name") + (keepNum == 0 ? "-" : keepNum));
+        lines.add(I18n.format(Main.MOD_ID + ".keeper.percraft.name")  + (perCraft == 0 ? "-" : perCraft));
 
         // 添加使用说明
         lines.add(TextFormatting.GRAY + I18n.format(Main.MOD_ID + ".keeper.info"));

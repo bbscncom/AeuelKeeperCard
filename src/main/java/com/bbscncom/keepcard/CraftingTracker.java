@@ -1,12 +1,14 @@
 package com.bbscncom.keepcard;
 
 import appeng.api.networking.IGrid;
-import appeng.api.networking.crafting.*;
+import appeng.api.networking.crafting.ICraftingGrid;
+import appeng.api.networking.crafting.ICraftingJob;
+import appeng.api.networking.crafting.ICraftingLink;
+import appeng.api.networking.crafting.ICraftingRequester;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.data.IAEItemStack;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
-import io.github.phantamanta44.libnine.util.ImpossibilityRealizedException;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
@@ -18,8 +20,8 @@ import java.util.concurrent.Future;
 
 public class CraftingTracker {
     private final ICraftingRequester owner;
-    private final HashBiMap<Item,Future<ICraftingJob>> jobs;
-    private final HashBiMap<Item,ICraftingLink> links;
+    private final HashBiMap<IAEItemStack,Future<ICraftingJob>> jobs;
+    private final HashBiMap<IAEItemStack,ICraftingLink> links;
 
     @SuppressWarnings("unchecked")
     public CraftingTracker(ICraftingRequester owner) {
@@ -29,20 +31,20 @@ public class CraftingTracker {
     }
 
     public boolean requestCrafting(IAEItemStack item, World world, IGrid grid, ICraftingGrid crafting, IActionSource actionSrc) {
-        if (links.get(item.getItem()) != null) {
+        if (links.get(item) != null) {
             return false;
         }
-        Future<ICraftingJob> jobTask = jobs.get(item.getItem());
+        Future<ICraftingJob> jobTask = jobs.get(item);
         if (jobTask == null) {
-            jobs.put(item.getItem(),crafting.beginCraftingJob(world, grid, actionSrc, item.copy(), null));
+            jobs.put(item,crafting.beginCraftingJob(world, grid, actionSrc, item.copy(), null));
         } else if (jobTask.isDone()) {
             try {
                 ICraftingJob job = jobTask.get();
                 if (job != null) {
                     ICraftingLink link = crafting.submitJob(job, owner, null, false, actionSrc);
-                    jobs.put(item.getItem(),null);
+                    jobs.remove(item);
                     if (link != null) {
-                        links.put(item.getItem(),link);
+                        links.put(item,link);
                         updateLinks();
                         return true;
                     }
@@ -50,7 +52,7 @@ public class CraftingTracker {
             } catch (ExecutionException e) {
                 return false;
             } catch (InterruptedException e) {
-                throw new ImpossibilityRealizedException(e);
+                throw new RuntimeException(e);
             }
         }
         return false;
@@ -58,9 +60,9 @@ public class CraftingTracker {
 
 
     private void updateLinks() {
-        Iterator<Map.Entry<Item, ICraftingLink>> iterator = links.entrySet().iterator();
+        Iterator<Map.Entry<IAEItemStack, ICraftingLink>> iterator = links.entrySet().iterator();
         while(iterator.hasNext()){
-            Map.Entry<Item, ICraftingLink> next = iterator.next();
+            Map.Entry<IAEItemStack, ICraftingLink> next = iterator.next();
             if(next.getValue().isCanceled()||next.getValue().isDone()) {
                 iterator.remove();
             }
@@ -77,7 +79,7 @@ public class CraftingTracker {
         return true;
     }
 
-    public Item getItemForJob(ICraftingLink link) {
+    public IAEItemStack getItemForJob(ICraftingLink link) {
         return links.inverse().get(link);
     }
 }

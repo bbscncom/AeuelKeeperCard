@@ -207,11 +207,11 @@ dependencies {
     implementation rfg.deobf('curse.maven:CensoredASM-460609:6333774')
 
     implementation rfg.deobf('curse.maven:aeuel-570458:6302098')
-    implementation rfg.deobf('curse.maven:nael-884359:5380800')
-
-
-    implementation 'curse.maven:lazyae-322347:3254160'
-    implementation 'curse.maven:libnine-322344:3509087'
+//    implementation rfg.deobf('curse.maven:nael-884359:5380800')
+//
+//
+//    implementation 'curse.maven:lazyae-322347:3254160'
+//    implementation 'curse.maven:libnine-322344:3509087'
 
 //    implementation 'curse.maven:ae2stuff-951064:5002181'
 //    implementation 'curse.maven:bdlib-70496:4675629'

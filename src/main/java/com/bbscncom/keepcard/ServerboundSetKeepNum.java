@@ -23,7 +23,7 @@ public class ServerboundSetKeepNum implements IMessage {
     public ServerboundSetKeepNum() {
     }
 
-    public ServerboundSetKeepNum(EnumHand mainHand, int keepNum, int perCraft) {
+    public ServerboundSetKeepNum(EnumHand hand, int keepNum, int perCraft) {
         this.hand = hand;
         this.keepNum = keepNum;
         this.perCraft=perCraft;

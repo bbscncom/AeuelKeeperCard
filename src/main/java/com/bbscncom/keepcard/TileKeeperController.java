@@ -65,7 +65,7 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
     @Nonnull
     @Override
     public TickingRequest getTickingRequest(@Nonnull IGridNode node) {
-        return new TickingRequest(400, 400, false, true);
+        return new TickingRequest(40, 40, false, true);
     }
 
     @Nonnull
@@ -107,16 +107,16 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
         ICraftingGrid crafting = (ICraftingGrid) grid.getCache(ICraftingGrid.class);
         IMEMonitor<IAEItemStack> storageGrid = ((IStorageGrid) grid.getCache(IStorageGrid.class)).getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
 
+
+        int[] nums = ItemKeeperUpgrade.getNums(stackInSlot);
+        int shouldKeep = nums[0];
+        int perCraft = nums[1];
         for (IAEItemStack stack : stacks) {
             IAEItemStack storage = storageGrid.getStorageList().findPrecise(stack);
-            int[] nums = ItemKeeperUpgrade.getNums(stackInSlot);
-            int shouldKeep = nums[0];
-            int perCraft = nums[1];
             long storageNumber = storage.getStackSize();
             if(shouldKeep<=storageNumber)continue;
             long shouldCraft = Math.min(shouldKeep-storageNumber,  perCraft);
             if (shouldCraft == 0) continue;
-
             IAEItemStack copy = stack.copy();
             copy.setStackSize(shouldCraft);
             this.craftingTracker.requestCrafting(copy, world, grid, crafting, this.actionSource);
@@ -148,7 +148,7 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
         if (stack == null) {
             return null;
         }
-        Item itemForJob = craftingTracker.getItemForJob(link);
+        IAEItemStack itemForJob = craftingTracker.getItemForJob(link);
         if (itemForJob == null) {
             return stack;
         }
