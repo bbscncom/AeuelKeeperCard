@@ -1,5 +1,6 @@
 package com.bbscncom.keepcard;
 
+import appeng.api.AEApi;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.IItemDefinition;
 import appeng.block.AEBaseBlock;
@@ -12,6 +13,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -60,6 +62,25 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
         block = new BlockKeeperController();
         itemBlock = register("keepercontroller", block, BlockKeeperController.tileclass);
         registerItemModels();
+
+        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID+":keepercard"), null,
+                new ItemStack(ItemKeeperUpgrade.item),
+                "DDD",
+                "DUD",
+                "DDD",
+                'D', Items.DIAMOND,
+                'U', AEApi.instance().definitions().materials().advCard().maybeStack(1).get()
+        );
+
+        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID+":keepercontroller"), null,
+                new ItemStack(ItemKeeperUpgrade.block),
+                "DDD",
+                "FDB",
+                "DDD",
+                'D', Items.DIAMOND,
+                'F', AEApi.instance().definitions().materials().formationCore().maybeStack(1).get(),
+                'B', AEApi.instance().definitions().materials().annihilationCore().maybeStack(1).get()
+        );
 
         GameRegistry.registerTileEntity(TileKeeperController.class, new ResourceLocation(Main.MOD_ID, "keepertile"));
     }
