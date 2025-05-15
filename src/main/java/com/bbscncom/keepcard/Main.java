@@ -12,12 +12,14 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixins;
+import zone.rong.mixinbooter.ILateMixinLoader;
+import zone.rong.mixinbooter.MixinLoader;
 
 import java.util.Map;
 
-@Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION ,dependencies="required-after:appliedenergistics2")
-
+@Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION ,dependencies="required-after:appliedenergistics2;required-after:mixinbooter;")
 @Mod.EventBusSubscriber(modid = Main.MOD_ID)
+@MixinLoader
 public class Main {
     public static final String MOD_ID = "aeuelkeepercard";
     public static final Logger LOGGER = LogManager.getLogger(Main.MOD_ID);

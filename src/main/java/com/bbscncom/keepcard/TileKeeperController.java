@@ -65,7 +65,7 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
     @Nonnull
     @Override
     public TickingRequest getTickingRequest(@Nonnull IGridNode node) {
-        return new TickingRequest(40, 40, false, true);
+        return new TickingRequest(400, 400, false, true);
     }
 
     @Nonnull
