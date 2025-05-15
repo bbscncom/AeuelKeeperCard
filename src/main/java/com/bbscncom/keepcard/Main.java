@@ -15,12 +15,16 @@ import org.spongepowered.asm.mixin.Mixins;
 import zone.rong.mixinbooter.ILateMixinLoader;
 import zone.rong.mixinbooter.MixinLoader;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Mod(modid = Main.MOD_ID, name = Main.NAME, version = Main.VERSION ,dependencies="required-after:appliedenergistics2;required-after:mixinbooter;")
 @Mod.EventBusSubscriber(modid = Main.MOD_ID)
-@MixinLoader
-public class Main {
+//@MixinLoader
+public class Main
+implements ILateMixinLoader
+{
     public static final String MOD_ID = "aeuelkeepercard";
     public static final Logger LOGGER = LogManager.getLogger(Main.MOD_ID);
     public static final String NAME = "Aeuel KeeperCard";
@@ -29,7 +33,7 @@ public class Main {
     public static Main instance;
 
     public Main() {
-        Mixins.addConfiguration("mixins." + MOD_ID + ".json");
+//        Mixins.addConfiguration("mixins." + MOD_ID + ".json");
         LOGGER.info("hello");
     }
 
@@ -53,4 +57,7 @@ public class Main {
         ItemKeeperUpgrade.allow.add(Api.INSTANCE.definitions().blocks().iface());
     }
 
+    public List<String> getMixinConfigs() {
+        return Collections.singletonList("mixins." + MOD_ID + ".json");
+    }
 }
