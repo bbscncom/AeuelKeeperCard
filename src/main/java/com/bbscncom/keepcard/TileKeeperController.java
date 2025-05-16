@@ -84,8 +84,10 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
             ItemStack keeper = null;
             for (int i = 0; i < 4; i++) {
                 ItemStack upgradesStackInSlot = upgrades.getStackInSlot(i);
-                if(upgradesStackInSlot.getItem()==ItemKeeperUpgrade.item)
-                    keeper=upgradesStackInSlot;break;
+                if(upgradesStackInSlot.getItem()==ItemKeeperUpgrade.item){
+                    keeper=upgradesStackInSlot;
+                    break;
+                }
             }
 
             IItemHandler patterns = controller.getInventoryByName("patterns");
@@ -113,6 +115,7 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
         int perCraft = nums[1];
         for (IAEItemStack stack : stacks) {
             IAEItemStack storage = storageGrid.getStorageList().findPrecise(stack);
+            if(storage==null)continue;
             long storageNumber = storage.getStackSize();
             if(shouldKeep<=storageNumber)continue;
             long shouldCraft = Math.min(shouldKeep-storageNumber,  perCraft);
