@@ -1,7 +1,7 @@
-package com.bbscncom.keepcard.mixins.base;
+package com.bbscncom.keepcard.mixins.keeper;
 
 import appeng.container.slot.SlotRestrictedInput;
-import com.bbscncom.keepcard.ItemKeeperUpgrade;
+import com.bbscncom.keepcard.keeper.ItemKeeperUpgrade;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

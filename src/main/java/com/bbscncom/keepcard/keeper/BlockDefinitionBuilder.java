@@ -1,4 +1,4 @@
-package com.bbscncom.keepcard;
+package com.bbscncom.keepcard.keeper;
 
 import appeng.api.definitions.IBlockDefinition;
 import appeng.block.AEBaseTileBlock;

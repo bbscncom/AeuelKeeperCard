@@ -1,8 +1,8 @@
-package com.bbscncom.keepcard.mixins.base;
+package com.bbscncom.keepcard.mixins.keeper;
 
 import appeng.parts.automation.UpgradeInventory;
-import com.bbscncom.keepcard.IExtendedUpgradeInventory;
-import com.bbscncom.keepcard.ItemKeeperUpgrade;
+import com.bbscncom.keepcard.keeper.IExtendedUpgradeInventory;
+import com.bbscncom.keepcard.keeper.ItemKeeperUpgrade;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

@@ -198,14 +198,28 @@ dependencies {
     }
 
     implementation 'org.jetbrains:annotations:16.0.2'
-    implementation "curse.maven:Mekanism-268560:2755008"
-    //newest
+//    implementation "curse.maven:Mekanism-268560:2755008"
 //    implementation "org.jetbrains:annotations:24.1.0"
 
-//    implementation rfg.deobf('curse.maven:CensoredASM-460609:6333774')
+//    implementation 'curse.maven:ThermalExpansion-69163:2926431'
+//    implementation 'curse.maven:ThermalDynamics-227443:2920505'
+//    implementation 'curse.maven:CodeChicken-242818:2755781'
+//    implementation 'curse.maven:Foundation-222880:2926428'
+//    implementation 'curse.maven:cofhcore-69162:2920433'
+//    implementation 'curse.maven:cofhWorld-271384:2920434'
+//    implementation rfg.deobf('curse.maven:RedstoneFlux-270789:2920436')
+
+    implementation rfg.deobf('curse.maven:CensoredASM-460609:6333774')
+
+    implementation rfg.deobf('curse.maven:ae2fluid-623955:5751930')
 
     implementation rfg.deobf('curse.maven:aeuel-570458:6302098')
-//    implementation rfg.deobf('curse.maven:nael-884359:5380800')
+
+    implementation rfg.deobf('curse.maven:Thaumcraft-223628:2629023')
+    implementation rfg.deobf('curse.maven:bauble-227083:2518667')
+    implementation rfg.deobf('curse.maven:packagedauto-308380:6312996')
+    implementation rfg.deobf('curse.maven:PackagedThaumic-908613:6124569')
+    implementation rfg.deobf('curse.maven:ThaumicEnergistics-223666:2915506')
 //
 //
 //    implementation 'curse.maven:lazyae-322347:3254160'
@@ -357,8 +371,10 @@ String parserChangelog() {
     return parsedChangelog
 }
 
-tasks.register('generateMixinJson') {
+//tasks.register('generateMixinJson') {
+task generateMixinJson {
     group 'cleanroom helpers'
+    dependsOn("downloadAssetManifest")
 //    def missingConfig = propertyStringList('mixin_configs').findAll { config -> !file("src/main/resources/mixins.${config}.json").exists() }
 //    onlyIf {
 //        if (propertyBool('use_mixins') && propertyBool('generate_mixins_json')) {
@@ -393,19 +409,22 @@ tasks.register('generateMixinJson') {
         propertyStringList('mixin_configs').each { config ->
             def file = file("src/main/resources/mixins.${config}.json")
             def json = [
-                    package: basePackage,
-                    required: true,
-                    refmap: propertyString('mixin_refmap'),
-                    target: "@env(DEFAULT)",
-                    minVersion: "0.8.5",
+                    package           : basePackage,
+                    required          : true,
+                    refmap            : propertyString('mixin_refmap'),
+                    target            : "@env(DEFAULT)",
+                    minVersion        : "0.8.5",
                     compatibilityLevel: "JAVA_8",
-                    mixins: mixinClasses,
-                    client: [],
-                    server: []
+                    mixins            : mixinClasses,
+                    client            : [],
+                    server            : []
             ]
             file.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(json))
         }
     }
+}
+tasks.named('runClient'){
+    dependsOn('generateMixinJson')
 }
 
 tasks.withType(JavaCompile).configureEach {

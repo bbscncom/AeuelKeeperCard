@@ -1,9 +1,9 @@
-package com.bbscncom.keepcard.mixins.base;
+package com.bbscncom.keepcard.mixins.keeper;
 
 
 import appeng.parts.automation.UpgradeInventory;
-import com.bbscncom.keepcard.IExtendedUpgradeInventory;
-import com.bbscncom.keepcard.ItemKeeperUpgrade;
+import com.bbscncom.keepcard.keeper.IExtendedUpgradeInventory;
+import com.bbscncom.keepcard.keeper.ItemKeeperUpgrade;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.spongepowered.asm.mixin.Final;
@@ -29,7 +29,7 @@ public class MixinUpgradeInvFilter {
 								   CallbackInfoReturnable<Boolean> cir) {
 		if (this.this$0 instanceof IExtendedUpgradeInventory outer && itemstack.getItem() instanceof ItemKeeperUpgrade niu) {
 			var u = niu.getType(itemstack);
-			if (u != null) {
+			if (u == ItemKeeperUpgrade.typeId) {
 				cir.setReturnValue(outer.getInstalledUpgrades(u) < outer.getMaxInstalled(u));
 			}
 		}

@@ -1,11 +1,15 @@
-package com.bbscncom.keepcard;
+package com.bbscncom.keepcard.keeper;
 
 import appeng.api.AEApi;
+import appeng.api.config.Upgrades;
 import appeng.api.definitions.IBlockDefinition;
 import appeng.api.definitions.IItemDefinition;
 import appeng.block.AEBaseBlock;
 import appeng.block.AEBaseItemBlock;
+import appeng.core.features.ItemDefinition;
 import appeng.items.AEBaseItem;
+import com.bbscncom.keepcard.Main;
+import com.bbscncom.keepcard.matchedoutputbus.ItemMatchedOutputBus;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -31,18 +35,21 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import thaumicenergistics.api.ThEApi;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Mod.EventBusSubscriber
 public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExtend {
+    public static final int MAX_NUM = 99999999;
     public static int typeId = 999;
     public static CreativeTabs tabs = new CreativeTabs(Main.MOD_ID) {
         public ItemStack createIcon() {
             return new ItemStack(item);
         }
     };
+    public static ItemMatchedOutputBus outputbusItem;
 
     public ItemKeeperUpgrade() {
         this.setCreativeTab(tabs);
@@ -57,13 +64,14 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
     }
 
     public static void onFMLLoadComplete(FMLPreInitializationEvent event) {
+        //keeper
         item = new ItemKeeperUpgrade();
         register("keeper", item, null);
         block = new BlockKeeperController();
         itemBlock = register("keepercontroller", block, BlockKeeperController.tileclass);
         registerItemModels();
 
-        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID+":keepercard"), null,
+        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID + ":keepercard"), null,
                 new ItemStack(ItemKeeperUpgrade.item),
                 "DDD",
                 "DUD",
@@ -72,7 +80,7 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
                 'U', AEApi.instance().definitions().materials().advCard().maybeStack(1).get()
         );
 
-        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID+":keepercontroller"), null,
+        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID + ":keepercontroller"), null,
                 new ItemStack(ItemKeeperUpgrade.block),
                 "DDD",
                 "FDB",
@@ -83,12 +91,34 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
         );
 
         GameRegistry.registerTileEntity(TileKeeperController.class, new ResourceLocation(Main.MOD_ID, "keepertile"));
+
+        //outputbus
+        outputbusItem = new ItemMatchedOutputBus();
+        register("matchedoutputbus", outputbusItem, null);
+        outputbusItem.initModel();
+
+        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID + ":keepercontroller"), null,
+                new ItemStack(ItemKeeperUpgrade.block),
+                "DBD",
+                "DDD",
+                "DFD",
+                'D', Items.DIAMOND,
+                'F', AEApi.instance().definitions().materials().formationCore().maybeStack(1).get(),
+                'B', AEApi.instance().definitions().materials().annihilationCore().maybeStack(1).get()
+        );
+        ItemStack itemStack = new ItemStack(outputbusItem);
+        Upgrades.CAPACITY.registerItem(itemStack, 2);
+        Upgrades.SPEED.registerItem(itemStack, 4);
+
     }
 
 
     @Override
     public Integer getType(ItemStack itemStack) {
-        return typeId;
+        if( itemStack.getItem() instanceof ItemKeeperUpgrade){
+            return typeId;
+        }
+        return 0;
     }
 
     @SideOnly(Side.CLIENT)
@@ -103,6 +133,7 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
                 0,                     // metadata
                 new ModelResourceLocation(Main.MOD_ID + ":keepercontroller", "inventory")
         );
+
     }
 
     private static <T> T register(String name, Object obj, Class tile) {
@@ -119,7 +150,6 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
             block.setTranslationKey(Main.MOD_ID + "." + name);
             ForgeRegistries.BLOCKS.register(block);
 
-            IBlockDefinition build = new BlockDefinitionBuilder(block, itemBlock, tile).build();
             return (T) itemBlock;
 
         } else if (obj instanceof Item) {
@@ -142,27 +172,28 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
         return super.onItemRightClick(worldIn, playerIn, handIn);
     }
 
-    public static void setNums(ItemStack stack, Integer keepNum,Integer perCraft){
+    public static void setNums(ItemStack stack, Integer keepNum, Integer perCraft) {
         NBTTagCompound tagCompound = stack.getTagCompound();
         if (tagCompound == null) {
             tagCompound = new NBTTagCompound();
         }
         perCraft = Math.abs(perCraft);
-        perCraft = Math.min(100000, perCraft);
+        perCraft = Math.min(MAX_NUM, perCraft);
         keepNum = Math.abs(keepNum);
-        keepNum = Math.min(100000, keepNum);
+        keepNum = Math.min(MAX_NUM, keepNum);
         tagCompound.setInteger("keepnum", keepNum);
         tagCompound.setInteger("perCraft", perCraft);
         stack.setTagCompound(tagCompound);
     }
-    public static int[] getNums(ItemStack stack){
+
+    public static int[] getNums(ItemStack stack) {
         NBTTagCompound tag = stack.getTagCompound();
         int[] ints = new int[2];
-        ints[0]=10;
-        ints[1]=1;
+        ints[0] = 10;
+        ints[1] = 1;
         if (tag != null) {
-            ints[0]=Math.max(1,tag.getInteger("keepnum"));
-            ints[1]=Math.max(1,tag.getInteger("perCraft"));
+            ints[0] = Math.max(1, tag.getInteger("keepnum"));
+            ints[1] = Math.max(1, tag.getInteger("perCraft"));
         }
         return ints;
     }
@@ -174,7 +205,7 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
         int perCraft = nums[1];
 
         lines.add(I18n.format(Main.MOD_ID + ".keeper.keepernum.name") + (keepNum == 0 ? "-" : keepNum));
-        lines.add(I18n.format(Main.MOD_ID + ".keeper.percraft.name")  + (perCraft == 0 ? "-" : perCraft));
+        lines.add(I18n.format(Main.MOD_ID + ".keeper.percraft.name") + (perCraft == 0 ? "-" : perCraft));
 
         // 添加使用说明
         lines.add(TextFormatting.GRAY + I18n.format(Main.MOD_ID + ".keeper.info"));

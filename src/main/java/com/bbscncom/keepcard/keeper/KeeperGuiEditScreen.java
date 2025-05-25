@@ -1,5 +1,6 @@
-package com.bbscncom.keepcard;
+package com.bbscncom.keepcard.keeper;
 
+import com.bbscncom.keepcard.Main;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -41,11 +42,19 @@ public class KeeperGuiEditScreen extends GuiScreen {
         this.buttonList.add(doneButton);
     }
 
+    public static int stringToInt(String s){
+        try{
+            return Integer.parseInt(s.substring(0, Math.min(s.length(),9)));
+        }catch(Exception e){
+            return 10;
+        }
+    }
+
     @Override
     public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
-        int keepNum = inputFieldKeeper.getText().isEmpty()?0:Integer.parseInt(inputFieldKeeper.getText());
-        int perCraft = inputFieldPerCraft.getText().isEmpty()?0:Integer.parseInt(inputFieldPerCraft.getText());
+        int keepNum = inputFieldKeeper.getText().isEmpty()?0:stringToInt(inputFieldKeeper.getText());
+        int perCraft = inputFieldPerCraft.getText().isEmpty()?0:stringToInt(inputFieldPerCraft.getText());
         ServerboundSetKeepNum serverboundSetKeepNum = new ServerboundSetKeepNum(EnumHand.MAIN_HAND, keepNum,perCraft);
         ServerboundSetKeepNum.INSTANCE.sendToServer(serverboundSetKeepNum);
     }
@@ -60,17 +69,35 @@ public class KeeperGuiEditScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        // 允许退格、删除、箭头等控制键
         if (Character.isDigit(typedChar) || isControlKey(keyCode)) {
-            Boolean b = this.inputFieldKeeper.isFocused() ? this.inputFieldKeeper.textboxKeyTyped(typedChar, keyCode) : null;
-            b = this.inputFieldPerCraft.isFocused() ? this.inputFieldPerCraft.textboxKeyTyped(typedChar, keyCode) : null;
+            Boolean b = this.inputFieldKeeper.textboxKeyTyped(typedChar, keyCode);
+            b = this.inputFieldPerCraft.textboxKeyTyped(typedChar, keyCode);
+
+            try{
+                if(this.inputFieldKeeper.isFocused()){
+                    int i = stringToInt(inputFieldKeeper.getText());
+                    if(i>ItemKeeperUpgrade.MAX_NUM){
+                        this.inputFieldKeeper.setText(String.valueOf(ItemKeeperUpgrade.MAX_NUM));
+                    }else{
+                    }
+                }
+                if(this.inputFieldPerCraft.isFocused()){
+                    int i = stringToInt(inputFieldPerCraft.getText());
+                    if(i>ItemKeeperUpgrade.MAX_NUM){
+                        this.inputFieldPerCraft.setText(String.valueOf(ItemKeeperUpgrade.MAX_NUM));
+                    }else{
+                    }
+                }
+
+            }catch(Exception e){
+
+            }
+
         } else {
-            // 屏蔽非法字符
         }
         super.keyTyped(typedChar, keyCode);
     }
 
-    // 判断是否为允许的控制键（例如退格、箭头等）
     private boolean isControlKey(int keyCode) {
         return keyCode == Keyboard.KEY_BACK
                 || keyCode == Keyboard.KEY_DELETE

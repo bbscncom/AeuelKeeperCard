@@ -1,9 +1,8 @@
-package com.bbscncom.keepcard.mixins.base.machine;
+package com.bbscncom.keepcard.mixins.keeper;
 
 import appeng.api.definitions.IItemDefinition;
 import appeng.parts.automation.BlockUpgradeInventory;
-import com.bbscncom.keepcard.ItemKeeperUpgrade;
-import com.bbscncom.keepcard.mixins.base.MixinUpgradeInventory;
+import com.bbscncom.keepcard.keeper.ItemKeeperUpgrade;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;

@@ -1,9 +1,9 @@
-package com.bbscncom.keepcard.mixins.base;
+package com.bbscncom.keepcard.mixins.keeper;
 
 import appeng.helpers.DualityInterface;
 import appeng.parts.automation.UpgradeInventory;
-import com.bbscncom.keepcard.GetInstalledUpgrades;
-import com.bbscncom.keepcard.IExtendedUpgradeInventory;
+import com.bbscncom.keepcard.keeper.GetInstalledUpgrades;
+import com.bbscncom.keepcard.keeper.IExtendedUpgradeInventory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;

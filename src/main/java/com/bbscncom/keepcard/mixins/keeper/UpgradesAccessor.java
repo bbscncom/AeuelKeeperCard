@@ -1,4 +1,4 @@
-package com.bbscncom.keepcard.mixins;
+package com.bbscncom.keepcard.mixins.keeper;
 
 import appeng.api.config.Upgrades;
 import net.minecraft.item.ItemStack;

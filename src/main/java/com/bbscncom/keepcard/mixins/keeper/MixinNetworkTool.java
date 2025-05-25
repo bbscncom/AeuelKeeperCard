@@ -1,6 +1,6 @@
-package com.bbscncom.keepcard.mixins.base;
+package com.bbscncom.keepcard.mixins.keeper;
 
-import com.bbscncom.keepcard.ItemKeeperUpgrade;
+import com.bbscncom.keepcard.keeper.ItemKeeperUpgrade;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import org.spongepowered.asm.mixin.Mixin;

@@ -2,6 +2,8 @@ item.aeuelkeepercard.keeper.name=Keeper Card
 item.aeuelkeepercard.keeper.desc=Keep Item Number
 tile.aeuelkeepercard.keepercontroller.name=Controller
 tile.aeuelkeepercard.keepercontroller.desc=
+item.aeuelkeepercard.matchedoutputbus.name=Matched Output Bus
+item.aeuelkeepercard.matchedoutputbus.desc=change from export bus, every double slot as a group. \n if second slot less than default 10, export first slot. \n the number of keep can change use keepercard
 itemGroup.aeuelkeepercard=Keeper Card
 
 aeuelkeepercard.keeper.keepernum.name=should keep number:

@@ -1,9 +1,8 @@
-package com.bbscncom.keepcard.mixins.base.machine;
+package com.bbscncom.keepcard.mixins.keeper;
 
 import appeng.api.definitions.IItemDefinition;
 import appeng.parts.automation.StackUpgradeInventory;
-import com.bbscncom.keepcard.ItemKeeperUpgrade;
-import com.bbscncom.keepcard.mixins.base.MixinUpgradeInventory;
+import com.bbscncom.keepcard.keeper.ItemKeeperUpgrade;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

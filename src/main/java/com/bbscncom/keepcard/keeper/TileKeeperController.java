@@ -1,14 +1,11 @@
-package com.bbscncom.keepcard;
+package com.bbscncom.keepcard.keeper;
 
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.IMachineSet;
-import appeng.api.networking.crafting.ICraftingGrid;
-import appeng.api.networking.crafting.ICraftingLink;
-import appeng.api.networking.crafting.ICraftingPatternDetails;
-import appeng.api.networking.crafting.ICraftingRequester;
+import appeng.api.networking.crafting.*;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.networking.ticking.IGridTickable;
 import appeng.api.networking.ticking.TickRateModulation;
@@ -19,32 +16,29 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.util.AECableType;
 import appeng.api.util.AEPartLocation;
 import appeng.api.util.DimensionalCoord;
-import appeng.helpers.DualityInterface;
+import appeng.fluids.tile.TileFluidInterface;
 import appeng.items.misc.ItemEncodedPattern;
 import appeng.me.GridAccessException;
 import appeng.me.helpers.AENetworkProxy;
 import appeng.me.helpers.MachineSource;
 import appeng.tile.grid.AENetworkTile;
 import appeng.tile.misc.TileInterface;
+import com.glodblock.github.common.tile.TileDualInterface;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 
 public class TileKeeperController extends AENetworkTile implements IGridTickable, ICraftingRequester {
     public AENetworkProxy gridProxy = new AENetworkProxy(this, "MyTickingTile", this.getItemFromTile(this), true);
 
-    public Optional<IGrid> aeGrid() {
-        return Optional.ofNullable(getProxy().getNode()).map(IGridNode::getGrid);
-    }
-
     public final CraftingTracker craftingTracker = new CraftingTracker(this);
     public MachineSource actionSource = new MachineSource(this);
+
     public TileKeeperController() {
     }
 
@@ -72,40 +66,90 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
     @Override
     public TickRateModulation tickingRequest(@Nonnull IGridNode node, int ticksSinceLastCall) {
         IGrid grid = node.getGrid();
+
+        ICraftingGrid cache = grid.getCache(ICraftingGrid.class);
+
         IMachineSet machines = grid.getMachines(TileInterface.class);
+        handlerMachine(machines, grid);
+
+        machines = grid.getMachines(TileFluidInterface.class);
+        handlerMachine(machines, grid);
+
+        if (Loader.isModLoaded("ae2fc")) {
+            machines = grid.getMachines(TileDualInterface.class);
+            handlerMachine(machines, grid);
+        }
+
+        int idleCpu = 0;
+        for (ICraftingCPU cpu : cache.getCpus()) {
+            if (!cpu.isBusy()) idleCpu++;
+        }
+        craftingTracker.beginCraftingJobs(idleCpu);
+
+        return TickRateModulation.SAME;
+    }
+
+    @NotNull
+    private void handlerMachine(IMachineSet machines, IGrid grid) {
         for (IGridNode machine : machines) {
-            TileInterface controller = (TileInterface) machine.getMachine();
-            GetInstalledUpgrades getInstalledUpgrades = (GetInstalledUpgrades) controller.getInterfaceDuality();
+
+            IItemHandler upgrades;
+            GetInstalledUpgrades getInstalledUpgrades;
+            IItemHandler patterns;
+
+            //get message from difference interface class
+            if (machine.getMachine() instanceof TileInterface) {
+                TileInterface controller = (TileInterface) machine.getMachine();
+                getInstalledUpgrades = (GetInstalledUpgrades) controller.getInterfaceDuality();
+                var interfaceDuality = controller.getInterfaceDuality();
+                upgrades = interfaceDuality.getInventoryByName("upgrades");
+                patterns = controller.getInventoryByName("patterns");
+            } else if (machine.getMachine() instanceof TileFluidInterface) {
+                TileFluidInterface controller = (TileFluidInterface) machine.getMachine();
+                getInstalledUpgrades = (GetInstalledUpgrades) controller.getDualityFluidInterface();
+                var interfaceDuality = controller.getDualityFluidInterface();
+                upgrades = interfaceDuality.getInventoryByName("upgrades");
+                patterns = controller.getInventoryByName("patterns");
+            } else if (Loader.isModLoaded("ae2fc") && machine.getMachine() instanceof TileDualInterface) {
+                TileDualInterface controller = (TileDualInterface) machine.getMachine();
+                getInstalledUpgrades = (GetInstalledUpgrades) controller.getInterfaceDuality();
+                var interfaceDuality = controller.getInterfaceDuality();
+                upgrades = interfaceDuality.getInventoryByName("upgrades");
+                patterns = controller.getInventoryByName("patterns");
+            } else {
+                continue;
+            }
+
+
             int installedUpgrades = getInstalledUpgrades.getInstalledUpgrades(ItemKeeperUpgrade.typeId);
             if (installedUpgrades == 0) continue;
 
-            DualityInterface interfaceDuality = controller.getInterfaceDuality();
-            IItemHandler upgrades = interfaceDuality.getInventoryByName("upgrades");
             ItemStack keeper = null;
             for (int i = 0; i < 4; i++) {
                 ItemStack upgradesStackInSlot = upgrades.getStackInSlot(i);
-                if(upgradesStackInSlot.getItem()==ItemKeeperUpgrade.item){
-                    keeper=upgradesStackInSlot;
+                if (upgradesStackInSlot.getItem() == ItemKeeperUpgrade.item) {
+                    keeper = upgradesStackInSlot;
                     break;
                 }
             }
 
-            IItemHandler patterns = controller.getInventoryByName("patterns");
-            for (int i = 0; i < patterns.getSlots(); i++) {
-                ItemStack stackInSlot = patterns.getStackInSlot(i);
-                if (stackInSlot == ItemStack.EMPTY) continue;
-                if (stackInSlot.getItem() instanceof ItemEncodedPattern encodedPattern) {
-                    final ICraftingPatternDetails details = encodedPattern.getPatternForItem(stackInSlot, world);
-                    IAEItemStack[] condensedOutputs = details.getCondensedOutputs();
-                    tick(grid, condensedOutputs,keeper);
-                }
-            }
-
+            handlerPatterns(grid, patterns, keeper);
         }
-        return TickRateModulation.SAME;
     }
 
-    protected void tick(IGrid grid, IAEItemStack[] stacks, ItemStack stackInSlot) {
+    private void handlerPatterns(IGrid grid, IItemHandler patterns, ItemStack keeper) {
+        for (int i = 0; i < patterns.getSlots(); i++) {
+            ItemStack stackInSlot = patterns.getStackInSlot(i);
+            if (stackInSlot == ItemStack.EMPTY) continue;
+            if (stackInSlot.getItem() instanceof ItemEncodedPattern encodedPattern) {
+                final ICraftingPatternDetails details = encodedPattern.getPatternForItem(stackInSlot, world);
+                IAEItemStack[] condensedOutputs = details.getCondensedOutputs();
+                handlePattern(grid, condensedOutputs, keeper);
+            }
+        }
+    }
+
+    protected void handlePattern(IGrid grid, IAEItemStack[] stacks, ItemStack stackInSlot) {
         ICraftingGrid crafting = (ICraftingGrid) grid.getCache(ICraftingGrid.class);
         IMEMonitor<IAEItemStack> storageGrid = ((IStorageGrid) grid.getCache(IStorageGrid.class)).getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
 
@@ -115,10 +159,10 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
         int perCraft = nums[1];
         for (IAEItemStack stack : stacks) {
             IAEItemStack storage = storageGrid.getStorageList().findPrecise(stack);
-            if(storage==null)continue;
+            if (storage == null) continue;
             long storageNumber = storage.getStackSize();
-            if(shouldKeep<=storageNumber)continue;
-            long shouldCraft = Math.min(shouldKeep-storageNumber,  perCraft);
+            if (shouldKeep <= storageNumber) continue;
+            long shouldCraft = Math.min(shouldKeep - storageNumber, perCraft);
             if (shouldCraft == 0) continue;
             IAEItemStack copy = stack.copy();
             copy.setStackSize(shouldCraft);
@@ -157,7 +201,7 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
         }
         try {
             IMEMonitor<IAEItemStack> storageGrid = ((IStorageGrid) gridProxy.getGrid().getCache(IStorageGrid.class)).getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
-            return storageGrid.injectItems(stack, mode, null);
+            return storageGrid.injectItems(stack, mode, craftingTracker.getActionSourceForJob(link));
         } catch (GridAccessException e) {
             throw new RuntimeException(e);
         }
@@ -168,4 +212,5 @@ public class TileKeeperController extends AENetworkTile implements IGridTickable
         if (craftingTracker.onJobStateChange(link)) {
         }
     }
+
 }
