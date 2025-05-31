@@ -97,7 +97,7 @@ public class ItemKeeperUpgrade extends AEBaseItem implements IUpgradeModuleExten
         register("matchedoutputbus", outputbusItem, null);
         outputbusItem.initModel();
 
-        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID + ":keepercontroller"), null,
+        GameRegistry.addShapedRecipe(new ResourceLocation(Main.MOD_ID + ":matchedoutputbus"), null,
                 new ItemStack(ItemKeeperUpgrade.block),
                 "DBD",
                 "DDD",

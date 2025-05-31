@@ -35,11 +35,11 @@ public class ContainerMatchedOutputBus extends ContainerUpgradeable {
         IItemHandler config = this.getUpgradeable().getInventoryByName("config");
 
         for(int y = 0; y < 7; ++y) {
-            for(int x = 0; x < 9; ++x) {
+            for(int x = 0; x < 8; ++x) {
                 if (y < 2) {
-                    this.addSlotToContainer(new SlotFakeTypeOnly(config, y * 9 + x, 8 + x * 18, 29 + y * 18));
+                    this.addSlotToContainer(new SlotFakeTypeOnly(config, y * 8 + x, 8 + x * 18, 29 + y * 18));
                 } else {
-                    this.addSlotToContainer(new OptionalSlotFakeTypeOnly(config, this, y * 9 + x, 8, 29, x, y, y - 2));
+                    this.addSlotToContainer(new OptionalSlotFakeTypeOnly(config, this, y * 8 + x, 8, 29, x, y, y - 2));
                 }
             }
         }

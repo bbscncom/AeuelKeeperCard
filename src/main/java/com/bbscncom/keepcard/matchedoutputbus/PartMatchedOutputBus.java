@@ -87,7 +87,7 @@ public class PartMatchedOutputBus extends PartSharedItemBus implements IGridTick
     @PartModels
     public static final IPartModel MODELS_HAS_CHANNEL = new PartModel(MODEL_BASE, new ResourceLocation(AppEng.MOD_ID, "part/export_bus_has_channel"));
     protected final IActionSource mySrc;
-    protected final AppEngInternalAEInventory Config = new AppEngInternalAEInventory(this, 63);
+    protected final AppEngInternalAEInventory Config = new AppEngInternalAEInventory(this, 56);
     protected int priority = 0;
     protected boolean cached = false;
     protected ITickingMonitor monitor = null;
